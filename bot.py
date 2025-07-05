@@ -1,6 +1,5 @@
-
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ContextTypes, filters
 import os
 
 # Liste des services et leurs détails
@@ -30,43 +29,42 @@ services = {
 # Stockage temporaire des choix des utilisateurs
 user_choices = {}
 
-def start(update: Update, context: CallbackContext) -> None:
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [[InlineKeyboardButton(service, callback_data=service)] for service in services.keys()]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('Bienvenue! Voici les services disponibles:', reply_markup=reply_markup)
+    await update.message.reply_text('Bienvenue! Voici les services disponibles:', reply_markup=reply_markup)
 
-def service_selection(update: Update, context: CallbackContext) -> None:
+async def service_selection(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    query.answer()
+    await query.answer()
     selected_service = query.data
     user_id = query.from_user.id
 
     user_choices[user_id] = selected_service
 
     details = services[selected_service]
-    query.edit_message_text(text=f"Vous avez choisi: {selected_service}\n{details}\n\nVeuillez fournir les informations demandées.")
+    await query.edit_message_text(text=f"Vous avez choisi: {selected_service}\n{details}\n\nVeuillez fournir les informations demandées.")
 
-def handle_message(update: Update, context: CallbackContext) -> None:
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     if user_id in user_choices:
         service = user_choices[user_id]
         user_input = update.message.text
-        update.message.reply_text(f"Votre demande pour le service '{service}' a été reçue:\n{user_input}\n\nNous vous contacterons bientôt pour finaliser.")
+        await update.message.reply_text(f"Votre demande pour le service '{service}' a été reçue:\n{user_input}\n\nNous vous contacterons bientôt pour finaliser.")
         del user_choices[user_id]
     else:
-        update.message.reply_text("Veuillez d'abord choisir un service avec la commande /start.")
+        await update.message.reply_text("Veuillez d'abord choisir un service avec la commande /start.")
 
 def main():
     TOKEN = os.getenv("BOT_TOKEN")
-    updater = Updater(TOKEN, use_context=True)
-    dispatcher = updater.dispatcher
+    app = ApplicationBuilder().token(TOKEN).build()
 
-    dispatcher.add_handler(CommandHandler('start', start))
-    dispatcher.add_handler(CallbackQueryHandler(service_selection))
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_message))
+    app.add_handler(CommandHandler('start', start))
+    app.add_handler(CallbackQueryHandler(service_selection))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    updater.start_polling()
-    updater.idle()
+    app.run_polling()
 
 if __name__ == '__main__':
     main()
+    
