@@ -56,7 +56,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Veuillez d'abord choisir un service avec la commande /start.")
 
 def main():
-    TOKEN = os.getenv("BOT_TOKEN")
+    TOKEN = "7965004321:AAEjt1sIQc8XbqK1HoDNIbo7hvn2qxj6ljI"
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler('start', start))
