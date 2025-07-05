@@ -26,7 +26,6 @@ services = {
     "Soutien Scolaire en Ligne": "Précisez la matière, le niveau et le type de soutien souhaité."
 }
 
-# Stockage temporaire des choix des utilisateurs
 user_choices = {}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -57,6 +56,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     TOKEN = "7965004321:AAEjt1sIQc8XbqK1HoDNIbo7hvn2qxj6ljI"
+
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler('start', start))
@@ -67,4 +67,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
