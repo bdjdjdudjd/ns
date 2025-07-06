@@ -59,7 +59,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Lancement du bot
 def main():
-    TOKEN = 'TON_TELEGRAM_BOT_TOKEN'  # Remplace par ton vrai token
+    TOKEN = '7965004321:AAEjt1sIQc8XbqK1HoDNIbo7hvn2qxj6ljI'  # Remplace par ton vrai token
 
     app = ApplicationBuilder().token(TOKEN).build()
 
